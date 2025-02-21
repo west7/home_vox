@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify 
 import speech_recognition as sr 
-
+import base64
+import os
 
 server = Flask(__name__)
 
@@ -15,32 +16,41 @@ def test():
 
 @server.route('/speech', methods=['POST'])
 def upload_audio():
-    if 'audio' not in request.files:
-        return jsonify({'error': 'Nenhum arquivo enviado'}), 400
-    
-    audio_file = request.files['audio']
-    file_path = "audio.wav"
-    audio_file.save(file_path)
+    data = request.get_json(force=True)
+    if not data or 'audio' not in data or 'content' not in data['audio']:
+         return jsonify({'error': 'Nenhum aúdio enviado'}), 400
 
-    recognize = sr.Recognizer()
-    with sr.AudioFile(file_path) as source:
-        audio = recognize.record(source)
-
+    audio_b64 = data['audio']['content']
     try:
-        text = recognize.recognize_google(audio, language='pt-BR')
-        print(f'Texto reconhecido: {text}')
+        audio_data = base64.b64decode(audio_b64)
+    except Exception as e:
+        return jsonify({'error': 'Falha ao decodificar audio', 'message': str(e)}), 400
+
+    file_path = 'audio.wav'
+    with open(file_path, 'wb') as audio_f:
+        audio_f.write(audio_data)
+
+    if not os.path.exists(file_path):
+        return jsonify({'error': 'Arquivo de audio não encontrado'}), 400
+
+    recognizer = sr.Recognizer()
+    try:
+        with sr.AudioFile(file_path) as source:
+            audio = recognizer.record(source)
+        text = recognizer.recognize_google(audio, language='pt-BR')
+        print(text)
 
         commands = {
-            'acender led': 'LED_ON',
-            'apagar led': 'LED_OFF'
+            'acender': 'LED_ON',
+            'apagar': 'LED_OFF'
         }
-
-        action = commands.get(text.lower(), "Comando não reconhecido")
+        action = commands.get(text.lower(), 'Comando não reconhecido')
         return jsonify({'command': action}), 200
-    
+
     except sr.UnknownValueError:
         return jsonify({'error': 'Não foi possível reconhecer o áudio'}), 400
-
+    except Exception as e:
+        return jsonify({'error': 'Erro durante o processamento do áudio', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     server.run(host='0.0.0.0', port=5000)
