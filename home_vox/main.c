@@ -9,9 +9,9 @@
 #define R_LED 13
 #define B_LED 12
 #define G_LED 11
-#define BUZZER 10
 #define BTN_B 6
 
+// Define os estados possíveis do sistema.
 typedef enum
 {
     IDLE,
@@ -25,40 +25,43 @@ state_t current_state = IDLE;
 
 int main()
 {
+    // Inicializa as bibliotecas padrão (stdio, etc.).
     stdio_init_all();
 
-    // LED
+    // Configuração dos pinos dos LEDs (RGB) como saída.
     gpio_init(R_LED);
     gpio_set_dir(R_LED, GPIO_OUT);
-
     gpio_init(G_LED);
     gpio_set_dir(G_LED, GPIO_OUT);
-
     gpio_init(B_LED);
     gpio_set_dir(B_LED, GPIO_OUT);
 
-    // BUZZER
-    gpio_init(BUZZER);
-    gpio_set_dir(BUZZER, GPIO_OUT);
-
-    // BUTTON B
+    // Configuração do pino do botão B como entrada com pull-up interno.
     gpio_init(BTN_B);
     gpio_set_dir(BTN_B, GPIO_IN);
     gpio_pull_up(BTN_B);
 
-    // ADC and DMA setup
+    // Configura o ADC e o DMA para a captura de áudio.
     adc_dma_setup();
     sleep_ms(100);
 
-    // Connect to Wi-Fi
+    // Conecta ao Wi-Fi
     connect_wifi(WIFI_SSID, WIFI_PASS);
 
-    bool prev_btn_state = true;
-    uint32_t recording_start = 0;
-    uint16_t raw_audio[SAMPLES];
+    // Variáveis para controle do estado do botão e temporização da gravação.
+    bool prev_btn_state = true;   // Armazena o estado anterior do botão.
+    uint32_t recording_start = 0; // Guarda o instante em que a gravação foi iniciada.
+
+    // Buffers para armazenamento dos dados de áudio:
+    // raw_audio: armazena os dados brutos do ADC (16kB para SAMPLES=8000).
+    // pcm_audio: armazena os dados convertidos para PCM (32kB para SAMPLES=8000).
+    uint16_t raw_audio[SAMPLES]; 
     int16_t pcm_audio[SAMPLES * 2];
+
+    // Flag para indicar que o buffer de áudio está pronto para envio.
     bool buffer_ready = false;
 
+    // Sinal de prontidão: acende o LED verde por 1,5 segundos.
     gpio_put(G_LED, 1);
     sleep_ms(1500);
     gpio_put(G_LED, 0);
@@ -67,24 +70,28 @@ int main()
     {
         bool current_btn_state = gpio_get(BTN_B);
 
+        // Controle de fluxo baseado no estado atual do sistema.
         switch (current_state)
         {
         case IDLE:
-            //  Write "Press B to record" in the OLED
-
+            // Em estado IDLE, aguarda o pressionamento do botão.
+            // (Exemplo: exibir mensagem "Press B to record" no OLED)
             if (!current_btn_state && prev_btn_state)
             {
+
                 current_state = RECORDING;
                 recording_start = time_us_32();
                 //  Write "Recording..." in the OLED
                 //  Turn off all LEDs and enable green for recording
 
+                // Captura o áudio e converte para PCM.
                 record_mic(raw_audio);
                 pcm_convert_audio(pcm_audio, raw_audio);
             }
             break;
 
         case RECORDING:
+            // Verifica se o tempo de gravação (baseado em SAMPLES) foi atingido.
             if ((uint64_t)(time_us_32() - recording_start) >=
                 ((uint64_t)SAMPLES * 1000000ULL) / 8000ULL)
             {
@@ -93,6 +100,7 @@ int main()
             }
             break;
         case PROCESSING:
+            // Se o buffer está pronto, muda para o estado de envio.
             if (buffer_ready)
             {
                 current_state = SENDING;
@@ -100,12 +108,12 @@ int main()
             break;
 
         case SENDING:
-
+            // Converte o áudio PCM para Base64 para envio.
             size_t base64_len;
             char *base64_audio = base64_encode((uint8_t *)pcm_audio, SAMPLES, &base64_len);
             if (base64_audio)
             {
-
+                // Cria um payload JSON dinâmico para a requisição HTTP.
                 char *json_payload = malloc(base64_len + 256);
                 if (json_payload)
                 {
@@ -114,34 +122,38 @@ int main()
                              "\"languageCode\":\"pt-BR\"},\"audio\":{\"content\":\"%s\"}}",
                              base64_audio);
 
+                    // Envia o áudio codificado para a API via conexão TCP.
                     tcp_send_audio(json_payload);
-                    // free(json_payload);
                 }
                 free(base64_audio);
+
+                // Aguarda até que a requisição seja completamente enviada.
                 while (!tcp_request_complete)
                 {
                     sleep_ms(100);
                 }
             }
+            // Reseta as flags e muda para o estado de execução.
             tcp_request_complete = false;
             buffer_ready = false;
             current_state = EXECUTING;
             break;
 
         case EXECUTING:
+            // Processa a resposta da API e executa a ação correspondente.
             if (api_response_ready)
             {
-                // Look for the "command" field in the response.
+                // Procura o campo "command" na resposta JSON.
                 char *command_start = strstr(api_response_buffer, "\"command\":\"");
                 if (command_start)
                 {
-                    command_start += strlen("\"command\":\""); // Move pointer to start of command value.
+                    command_start += strlen("\"command\":\""); // Move o ponteiro para o início do comando.
                     char *command_end = strchr(command_start, '\"');
                     if (command_end)
                     {
-                        *command_end = '\0'; // Terminate the command string.
+                        *command_end = '\0'; // Termina a string no final do comando.
 
-                        // Check for LED_OFF command first.
+                        // Se o comando for "LED_OFF", desliga todos os LEDs.
                         if (strcasecmp(command_start, "LED_OFF") == 0)
                         {
                             gpio_put(R_LED, 0);
@@ -150,7 +162,7 @@ int main()
                         }
                         else
                         {
-                            // Assume the command is in the form "SET_COLOR <color>"
+                            // Se o comando for "SET_COLOR <cor>", liga o LED correspondente.
                             char *action = strtok(command_start, " ");
                             char *color = strtok(NULL, " ");
                             if (action && color && strcasecmp(action, "SET_COLOR") == 0)
@@ -172,12 +184,14 @@ int main()
                         }
                     }
                 }
+                // Reseta a flag de resposta pronta.
                 api_response_ready = false;
             }
-
+            // Após a execução, retorna ao estado IDLE.
             current_state = IDLE;
             break;
         }
+        // Atualiza o estado anterior do botão para a próxima iteração.
         prev_btn_state = current_btn_state;
     }
 }
