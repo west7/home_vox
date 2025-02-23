@@ -39,6 +39,8 @@ add_executable(virtual_assistant2
         main.c 
         wifi.c
         http.c
+        mic.c
+        base64.c
         )
 
 pico_set_program_name(virtual_assistant2 "virtual_assistant2")

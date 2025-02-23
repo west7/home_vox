@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+audio_base64.txt
+audio_test.wav
+test.py
+
 # Object files
 *.o
 *.ko
