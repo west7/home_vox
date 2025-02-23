@@ -1,6 +1,6 @@
 # Home Vox
 
-**Home Vox** é um assitente virtual inteligente desenvolvido para automação de tarefas e controle de dispositivos eltrônicos. Construído usando o microcontrolador **RP2040**, ele escuta comandos de voz e executa ações de acordo com o que foi solicitado.
+**Home Vox** é um assitente virtual inteligente desenvolvido para automação de tarefas e controle de dispositivos eletrônicos. Construído usando a [BitDogLab](https://github.com/BitDogLab/BitDogLab/tree/main), ele escuta comandos de voz e executa ações de acordo com o que foi solicitado.
 
 ## Funcionalidades
 
