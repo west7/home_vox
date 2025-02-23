@@ -28,14 +28,14 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(virtual_assistant2 C CXX ASM)
+project(home_vox C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(virtual_assistant2 
+add_executable(home_vox 
         main.c 
         wifi.c
         http.c
@@ -43,25 +43,25 @@ add_executable(virtual_assistant2
         base64.c
         )
 
-pico_set_program_name(virtual_assistant2 "virtual_assistant2")
-pico_set_program_version(virtual_assistant2 "0.1")
+pico_set_program_name(home_vox "home_vox")
+pico_set_program_version(home_vox "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(virtual_assistant2 1)
-pico_enable_stdio_usb(virtual_assistant2 1)
+pico_enable_stdio_uart(home_vox 1)
+pico_enable_stdio_usb(home_vox 1)
 
 # Add the standard library to the build
-target_link_libraries(virtual_assistant2
+target_link_libraries(home_vox
         pico_stdlib
         )
 
 # Add the standard include files to the build
-target_include_directories(virtual_assistant2 PRIVATE
+target_include_directories(home_vox PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 # Add any user requested libraries
-target_link_libraries(virtual_assistant2 
+target_link_libraries(home_vox 
         pico_cyw43_arch_lwip_threadsafe_background
         hardware_dma
         hardware_adc
@@ -69,5 +69,5 @@ target_link_libraries(virtual_assistant2
 
 add_compile_definitions(CYW43_LWIP)
 
-pico_add_extra_outputs(virtual_assistant2)
+pico_add_extra_outputs(home_vox)
 
