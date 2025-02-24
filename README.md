@@ -20,6 +20,7 @@ Utiliza os seguintes componentes e recursos da plataforma BitDogLab:
 - Microfone com amplificador (MAX4466EXK)
 - LED RGB
 - Botão para controle de gravação de voz
+- Display OLED para feedback visual
 - DMA e ADC para processamento de áudio
 - Comunicação com a API via TCP/IP
 - Comunicação serial para depuração
@@ -59,7 +60,7 @@ python3 server.py
 
 1. Espere as configurações de rede serem carregadas e o Home Vox estar pronto para uso 
 2. Garanta que as credenciais de rede estão corretas no arquivo `wifi.h`
-3. Fala o comando de voz suportado de maneira clara
+3. Fale o comando de voz suportado de maneira clara
 4. Observe o feedback nos LEDs RGB
 
 ## Planos Futuros
