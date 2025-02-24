@@ -5,10 +5,10 @@
 ## Funcionalidades
 
 - Reconhecimento de voz: por enquanto, suporta comandos básicos:
-  - `LED_OFF`: Desliga os LEDs
-  - `SET_COLOR RED`: Define a cor do LED como vermelho
-  - `SET_COLOR GREEN`: Define a cor do LED como verde
-  - `SET_COLOR BLUE`: Define a cor do LED como azul
+  - 'Acender':`LED_OFF`: Desliga os LEDs
+  - 'Vermelho':`SET_COLOR RED`: Define a cor do LED como vermelho
+  - 'Verde':`SET_COLOR GREEN`: Define a cor do LED como verde
+  - 'Azul':`SET_COLOR BLUE`: Define a cor do LED como azul
 - Conectividade Wi-Fi: Conecta-se a uma rede Wi-Fi para processar comandos de voz
 - Processamento em tempo real: Utiliza DMA e ADC para processar o sinal de áudio em tempo real
 - Integração com API: Se comunica com uma API externa para processar os comandos de voz
