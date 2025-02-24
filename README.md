@@ -48,9 +48,13 @@ make
 4. Suba a API
 ```bash
 cd server
-source env/bin/activate
+python3 -m venv env
+source env/bin/activate # Linux e MacOS
+env\Scripts\activate # Windows
+pip install -r requirements.txt
 python3 server.py
 ```
+
 ## Uso
 
 1. Espere as configurações de rede serem carregadas e o Home Vox estar pronto para uso 
