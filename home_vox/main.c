@@ -5,11 +5,16 @@
 #include "http.h"
 #include "mic.h"
 #include "base64.h"
+#include "pico/binary_info.h"
+#include "inc/ssd1306.h"
+#include "hardware/i2c.h"
 
 #define R_LED 13
 #define B_LED 12
 #define G_LED 11
 #define BTN_B 6
+#define I2C_SDA 14
+#define I2C_SCL 15
 
 // Define os estados possíveis do sistema.
 typedef enum
@@ -40,6 +45,36 @@ int main()
     gpio_init(BTN_B);
     gpio_set_dir(BTN_B, GPIO_IN);
     gpio_pull_up(BTN_B);
+
+    // Inicializa o display OLED e configura os pinos SDA e SCL.
+    i2c_init(i2c1, ssd1306_i2c_clock * 1000);
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C_SDA);
+    gpio_pull_up(I2C_SCL);
+
+    ssd1306_init();
+
+    struct render_area frame_area = {
+        start_column : 0,
+        end_column : ssd1306_width - 1,
+        start_page : 0,
+        end_page : ssd1306_n_pages - 1
+    };
+
+    calculate_render_area_buffer_length(&frame_area);
+
+    // zera o display inteiro
+    uint8_t ssd[ssd1306_buffer_length];
+    memset(ssd, 0, ssd1306_buffer_length);
+    render_on_display(ssd, &frame_area);
+
+    char *text[] = {
+        "  Escutando   ",
+        "  Pressione B "};
+
+    int x_pos = 0; // Posição horizontal (coluna)
+    int y_pos = 5; // Posição vertical (linha)
 
     // Configura o ADC e o DMA para a captura de áudio.
     adc_dma_setup();
@@ -76,13 +111,16 @@ int main()
         case IDLE:
             // Em estado IDLE, aguarda o pressionamento do botão.
             // (Exemplo: exibir mensagem "Press B to record" no OLED)
+            ssd1306_draw_string(ssd, x_pos, y_pos, text[1]);
+            render_on_display(ssd, &frame_area);
             if (!current_btn_state && prev_btn_state)
             {
 
                 current_state = RECORDING;
                 recording_start = time_us_32();
                 //  Write "Recording..." in the OLED
-                //  Turn off all LEDs and enable green for recording
+                ssd1306_draw_string(ssd, x_pos, y_pos, text[0]);
+                render_on_display(ssd, &frame_area);
 
                 // Captura o áudio e converte para PCM.
                 record_mic(raw_audio);
