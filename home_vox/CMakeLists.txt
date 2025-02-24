@@ -41,6 +41,7 @@ add_executable(home_vox
         http.c
         mic.c
         base64.c
+        inc/ssd1306_i2c.c
         )
 
 pico_set_program_name(home_vox "home_vox")
@@ -65,6 +66,7 @@ target_link_libraries(home_vox
         pico_cyw43_arch_lwip_threadsafe_background
         hardware_dma
         hardware_adc
+        hardware_i2c
         )
 
 add_compile_definitions(CYW43_LWIP)
