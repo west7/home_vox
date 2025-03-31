@@ -1,19 +1,23 @@
 # Home Vox
 
-**Home Vox** é um assitente virtual inteligente desenvolvido para automação de tarefas e controle de dispositivos eletrônicos. Construído usando a [BitDogLab](https://github.com/BitDogLab/BitDogLab/tree/main), ele escuta comandos de voz e executa ações de acordo com o que foi solicitado.
+> **Home Vox** é um assitente virtual inteligente desenvolvido para automação de tarefas e controle de dispositivos eletrônicos. Construído usando a [BitDogLab](https://github.com/BitDogLab/BitDogLab/tree/main), ele escuta comandos de voz e executa ações de acordo com o que foi solicitado.
 
-## Funcionalidades
+## Objetivo 🎯
+
+O objetivo do projeto é criar um assistente virtual que possa ser utilizado para controlar dispositivos eletrônicos em casa. O Home Vox é capaz de reconhecer comandos de voz e executar ações de acordo com o que foi solicitado. Por exemplo, ele poderá ser utilizado para ligar e desligar lâmpadas, controlar a temperatura do ar condicionado, abrir e fechar cortinas, entre outras tarefas.
+
+## Funcionalidades 🚀
 
 - Reconhecimento de voz: por enquanto, suporta comandos básicos:
-  - 'Acender':`LED_OFF`: Desliga os LEDs
-  - 'Vermelho':`SET_COLOR RED`: Define a cor do LED como vermelho
-  - 'Verde':`SET_COLOR GREEN`: Define a cor do LED como verde
-  - 'Azul':`SET_COLOR BLUE`: Define a cor do LED como azul
+  - `Apagar` Desliga os LEDs
+  - `Vermelho` Define a cor do LED como vermelho
+  - `Verde` Define a cor do LED como verde
+  - `Azul`  Define a cor do LED como azul
 - Conectividade Wi-Fi: Conecta-se a uma rede Wi-Fi para processar comandos de voz
 - Processamento em tempo real: Utiliza DMA e ADC para processar o sinal de áudio em tempo real
 - Integração com API: Se comunica com uma API externa para processar os comandos de voz
 
-## Hardware
+## Hardware 🛠️
 
 Utiliza os seguintes componentes e recursos da plataforma BitDogLab:
 - Módulo Wi-Fi da Pico W
@@ -22,15 +26,14 @@ Utiliza os seguintes componentes e recursos da plataforma BitDogLab:
 - Botão para controle de gravação de voz
 - Display OLED para feedback visual
 - DMA e ADC para processamento de áudio
-- Comunicação com a API via TCP/IP
 - Comunicação serial para depuração
 
-## Software
+## Software 🖥️
 
 - Linguagem de programação: C (Raspberry Pi Pico SDK)
 - CMake
 
-## Setup
+## Setup 🔧
 
 1. Clone o repositório:
 ```bash
@@ -56,7 +59,7 @@ pip install -r requirements.txt
 python3 server.py
 ```
 
-## Uso
+## Uso ⚡
 
 1. Espere as configurações de rede serem carregadas e o Home Vox estar pronto para uso 
 2. Garanta que as credenciais de rede estão corretas no arquivo `wifi.h`
