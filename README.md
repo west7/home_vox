@@ -6,6 +6,10 @@
 
 O objetivo do projeto é criar um assistente virtual que possa ser utilizado para controlar dispositivos eletrônicos em casa. O Home Vox é capaz de reconhecer comandos de voz e executar ações de acordo com o que foi solicitado. Por exemplo, ele poderá ser utilizado para ligar e desligar lâmpadas, controlar a temperatura do ar condicionado, abrir e fechar cortinas, entre outras tarefas.
 
+## Vídeo
+
+[![Vídeo](https://img.youtube.com/vi/Q1LQnpzrpS8/hqdefault.jpg)](https://www.youtube.com/watch?v=Q1LQnpzrpS8)
+
 ## Funcionalidades 🚀
 
 - Reconhecimento de voz: por enquanto, suporta comandos básicos:
