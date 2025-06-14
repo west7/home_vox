@@ -8,7 +8,11 @@ O objetivo do projeto é criar um assistente virtual que possa ser utilizado par
 
 ## Vídeo
 
+<div align="center">
+
 [![Vídeo](https://img.youtube.com/vi/Q1LQnpzrpS8/hqdefault.jpg)](https://www.youtube.com/watch?v=Q1LQnpzrpS8)
+
+</div>
 
 ## Funcionalidades 🚀
 
